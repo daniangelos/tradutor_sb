@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# Backupe files
+*.swp
+.*.swp
+.*.swo
+*.*~
