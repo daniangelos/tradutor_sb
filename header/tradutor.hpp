@@ -8,8 +8,7 @@
 using namespace std;
 
 enum{
-	ZERO,
-	ADD,
+	ADD = 1,
 	SUB,
 	MULT,
 	DIV,

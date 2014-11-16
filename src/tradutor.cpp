@@ -28,6 +28,7 @@ int traducaoIA32(){
 		}
 	}
 
+	// Inicio do .text
 	codigoIA_32.push_back("section .text");
 	codigoIA_32.push_back("global _start");
 	codigoIA_32.push_back("_start:");
@@ -106,7 +107,7 @@ int traducaoIA32(){
 		for(j = 0; j < temp.size(); j++){
 			codigoIA_32.push_back(temp[j]);
 		}
-	} while(opcodes[i] != STOP && i < opcodes.size());
+	} while(opcodes[i] != STOP && i < opcodes.size() - 1);
 
 	return 0;
 }
