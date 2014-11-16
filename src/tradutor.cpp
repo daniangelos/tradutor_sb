@@ -1,13 +1,7 @@
-#include <iostream>
+#include "../header/tradutor.hpp"
 
-using namespace std;
-
-int main(int argc, char* argv[]){
-
-	if(argc != 2){
-		cout << "Erro! Numero de argumentos diferente do esperado." << endl;
-		return (1);
-	}
+int traducaoIA32(){
+	// ** Traduzir objeto assembly hipotetico pra codigo IA32
 	
 	return 0;
 }
