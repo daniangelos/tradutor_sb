@@ -28,6 +28,10 @@ int traducaoIA32(){
 		}
 	}
 
+	codigoIA_32.push_back("section .text");
+	codigoIA_32.push_back("global _start");
+	codigoIA_32.push_back("_start:");
+
 	//TODO: primeiro data ou text? 
 	
 	// Le vetor de opcodes ate encontrar stop

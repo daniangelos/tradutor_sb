@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 
 	input = argv[1];
 	// Usar o montador (trab1) pra gerar o objeto hipotetico e auxiliar a traducao
-	//gerarObjetoHipotetico(input);
+	gerarObjetoHipotetico(input);
 	traducaoIA32();
 	
 	return 0;
