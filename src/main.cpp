@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "../montador/header/montador.hpp"
-//#include "../header/tradutor.hpp"
+#include "../header/tradutor.hpp"
 
 using namespace std;
 
@@ -16,8 +16,8 @@ int main(int argc, char* argv[]){
 
 	input = argv[1];
 	// Usar o montador (trab1) pra gerar o objeto hipotetico e auxiliar a traducao
-	gerarObjetoHipotetico(input);
-	//traducaoIA32();
+	//gerarObjetoHipotetico(input);
+	traducaoIA32();
 	
 	return 0;
 }

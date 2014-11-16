@@ -94,7 +94,6 @@ void gerarTabelaDefines(char* input){
 
 
 	if(!fpInput.is_open()){
-		cout << input << endl;
 		cout << "Arquivo de input nao existe" << endl;
 		exit(1);
 
@@ -228,7 +227,6 @@ int gerarTokens(char* input){
 
 
 	if(!fpInput.is_open()){
-		cout << input << endl;
 		cout << "Arquivo de input nao existe" << endl;
 		exit(1);
 
