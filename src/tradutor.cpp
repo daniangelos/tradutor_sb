@@ -9,43 +9,23 @@ int traducaoIA32(vector<int> vetObjeto){
 	int i, j;
 
     //comentei toda essa parte pq agente ja tinha esse vetor do trabalho passado.
+	//boa!! nem precisa gerar o output do montador entao...
     opcodes = vetObjeto;
 
-
-//	fpInput.open("./outputs/objHipotetico.o");
-//	if(!fpInput.is_open()){
-//		cout << "Arquivo objeto hipotetico nao encontrado." << endl;
-//		return 1;
-//	}
-//
-//	// Pega os opcodes do objeto e passa para um vetor de inteiros
-//	getline(fpInput, buffer);
-//	for (i = 0; i < buffer.size(); ++i)
-//	{
-//		if(buffer[i] != ' '){
-//			opcode += buffer[i];
-//		}
-//		else{
-//			opcodes.push_back(stoi(opcode));
-//			opcode.clear();
-//		}
-//	}
-
 	// Inicio do .text
-	//acho q devemos colocar um '\n' em todas as instrucoes, certo?
 	codigoIA_32.push_back("section .text");
 	codigoIA_32.push_back("global _start");
 	codigoIA_32.push_back("_start:");
 
 	//TODO: primeiro data ou text?
-	//tanto faz!
+	//tanto faz! 
+	//nao!! preciso saber onde comeca o text no objeto, se nao vou estar lendo dado como instrucao... nao?
 
 	// Le vetor de opcodes ate encontrar stop
 	// Gera codigo ia-32 correspondente a instrucao
 	i = -1;
 	//pensando:
 	//add var1 -> add eax, [var1]
-	//
 	do{
 		i++;
 		temp.clear();

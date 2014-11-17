@@ -65,10 +65,10 @@ namespace pre_parser{
         if(opCode == 9){
             return 2;
         }
-        else if(opCode == 18){
+        else if(opCode == 14){
             return 0;
         }
-        else if(opCode > 0 && opCode < 18){
+        else if(opCode > 0 && opCode <= 18){
             return 1;
         }
         else{
@@ -245,21 +245,21 @@ namespace pre_parser{
         if(stringCompareI(string1, "OUTPUT")){
             return 13;
         }
+        if(stringCompareI(string1, "STOP")){
+            return 14;
+        }
 		if(stringCompareI(string1, "C_INPUT")){
-			return 14;
-		}
-		if(stringCompareI(string1, "C_OUTPUT")){
 			return 15;
 		}
-		if(stringCompareI(string1, "S_INPUT")){
+		if(stringCompareI(string1, "C_OUTPUT")){
 			return 16;
 		}
-		if(stringCompareI(string1, "S_OUTPUT")){
+		if(stringCompareI(string1, "S_INPUT")){
 			return 17;
 		}
-        if(stringCompareI(string1, "STOP")){
-            return 18;
-        }
+		if(stringCompareI(string1, "S_OUTPUT")){
+			return 18;
+		}
         return 0;
     }
 
