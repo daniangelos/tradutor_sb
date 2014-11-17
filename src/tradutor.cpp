@@ -34,13 +34,11 @@ int traducaoIA32(vector<int> vetObjeto){
                 buffer = "add";
                 temp.push_back(getAddFormat(buffer,opcodes[i+1]));
                 i++;
-				//Jony aqui
 				break;
 			case SUB:
                 buffer = "sub";
                 temp.push_back(getAddFormat(buffer,opcodes[i+1]));
                 i++;
-				//Jony aqui
 				break;
 			case MULT:
 				//Jony aqui
@@ -52,28 +50,23 @@ int traducaoIA32(vector<int> vetObjeto){
                 buffer = "jmp";
                 temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
                 i++;
-				//Jony aqui
 				break;
 			case JMPN:
                 buffer = "jl";
                 temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
                 i++;
-				//Jony aqui
 				break;
 			case JMPP:
                 buffer = "jg";
                 temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
                 i++;
-				//Jony aqui
 				break;
 			case JMPZ:
                 buffer = "je";
                 temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
                 i++;
-				//Jony aqui
 				break;
 			case COPY:
-				//Jony aqui
 				temp = getCopyFormat(opcodes[i+1],opcodes[i+2]);
 				i += 2;		// operacao que utiliza 2 operandos
 				break;
@@ -84,11 +77,11 @@ int traducaoIA32(vector<int> vetObjeto){
 				//Jony aqui
 				break;
 			case INPUT:
-				temp = lerInteiro();
+				temp = lerInteiro(opcodes[i+1]);
 				i++;	  	// incremento pra desconsiderar o operando
 				break;
 			case OUTPUT:
-				temp = escreverInteiro();
+				temp = escreverInteiro(opcodes[i+1]);
 				i++;
 				break;
 			case C_INPUT:
@@ -117,6 +110,11 @@ int traducaoIA32(vector<int> vetObjeto){
 		}
 	} while(opcodes[i] != STOP && i < opcodes.size() - 1);
 
+	temp = escreverSubrotinas();
+	for(j = 0; j < temp.size(); j++){
+		codigoIA_32.push_back(temp[j]);
+	}
+
 	//como o criterio de parada eh o stop, nesse ponto geramos o IA32 do text, a partir daqui vamos fazer o data!!!
 	//eh necesario section bss?!
 	codigoIA_32.push_back("section .data");
@@ -132,14 +130,22 @@ int traducaoIA32(vector<int> vetObjeto){
 	return 0;
 }
 
-vector<string> lerInteiro(){
+vector<string> lerInteiro(int op){
 	vector<string> codigo;
+
+	codigo.push_back("mov ecx, [var" + to_string(op) + "]");
+	codigo.push_back("call input");
+	codigo.push_back("add ecx, 0x30");
 
 	return codigo;
 }
 
-vector<string> escreverInteiro(){
+vector<string> escreverInteiro(int op){
 	vector<string> codigo;
+
+	codigo.push_back("mov ecx, [var" + to_string(op) + "]");
+	codigo.push_back("add ecx, 0x30");
+	codigo.push_back("call output");
 
 	return codigo;
 }
@@ -227,4 +233,30 @@ vector<string> getCopyFormat(int op1,int op2){
     return vetor;
 
 
+}
+
+vector<string> escreverSubrotinas(){
+	vector<string> codigo;
+
+	//Input padrao
+	codigo.push_back("input:");
+	codigo.push_back("pusha");
+	codigo.push_back("mov eax, 4");
+	codigo.push_back("mov ebx, 0");
+	codigo.push_back("mov edx, 1");
+	codigo.push_back("int 0x80");
+	codigo.push_back("popa");
+	codigo.push_back("ret");
+
+	//Output padrao
+	codigo.push_back("output:");
+	codigo.push_back("pusha");
+	codigo.push_back("mov eax, 4");
+	codigo.push_back("mov ebx, 1");
+	codigo.push_back("mov edx, 1");
+	codigo.push_back("int 0x80");
+	codigo.push_back("popa");
+	codigo.push_back("ret");
+
+	return codigo;
 }

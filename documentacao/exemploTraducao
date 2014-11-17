@@ -7,6 +7,7 @@ stop
 
 
 section data
+l: const 10
 n1: space
 n2: space
 n3: space 4
@@ -20,6 +21,7 @@ add eax, [n1]
 sub eax, [n2]
 mov eax, [n3 + 1]
 mov ecx, [n3]
+add ecx,0x30
 call output
 mov eax,1
 mov ebx,0
@@ -44,8 +46,10 @@ output:
 	
 	mov eax,4
 	mov ebx,1
-	add ecx,0x30
+	
 	mov edx,1
+	
+	int 0x80
 
 	popa
 	leave
