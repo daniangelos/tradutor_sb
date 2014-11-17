@@ -352,7 +352,7 @@ int macro(char* input, char* output){
 	return erro;
 }
 
-int passagemUnica(char* input, char* output){
+vector<int> passagemUnica(char* input, char* output){
 	ifstream fpInput;
 	ofstream fpOutput;
 	string buffer;
@@ -778,7 +778,7 @@ int passagemUnica(char* input, char* output){
 		dataFinal = endereco - 1;
 	}
 
-	//Atualizar o obj com as listas de uso 
+	//Atualizar o obj com as listas de uso
 	for(map<string,rotulo>::iterator it=tabelaDeRotulos.begin(); it!=tabelaDeRotulos.end(); it++){
 		if(!pre_parser::verificaValidadeDeToken(it->first)){
 			erro++;
@@ -792,9 +792,9 @@ int passagemUnica(char* input, char* output){
 
 		}else{
 			while(!it->second.use.empty()){
-				// Percorrer as listas e somar com os valores obtidos na passagem unica	
+				// Percorrer as listas e somar com os valores obtidos na passagem unica
 				endMod = it->second.use.front();
-				auxValue = vetParaArquivo[endMod]; 
+				auxValue = vetParaArquivo[endMod];
 				vetParaArquivo[endMod] += it->second.value;
 				it->second.use.pop_front();
 			}
@@ -877,12 +877,15 @@ int passagemUnica(char* input, char* output){
 
 
 	//somente escrever se tiver tudo nos conformes
+	//pra que gerar arquivo obj do hipotetico nesse trabalho? vou ficar so com a estrutura de dados!
 	if(!erro){
 		strParaArquivoTotal.clear();
 		for(i=0; i<vetParaArquivo.size(); i++){
 			strParaArquivoTotal += to_string(vetParaArquivo[i]);
 			strParaArquivoTotal += " ";
 		}
+		// comentando parte do arquivo, que agente nao quer este output
+
 		fpOutput.open(output);
 		fpOutput << strParaArquivoTotal;
 	}else{
@@ -891,14 +894,16 @@ int passagemUnica(char* input, char* output){
 
 	fpInput.close();
 	fpOutput.close();
-	return erro;
+	return vetParaArquivo;
 }
 
 
-int gerarObjetoHipotetico(char* input){
+vector<int> gerarObjetoHipotetico(char* input){
 	char * outPre = new char[14];
 	char * outMacro = new char[16];
 	char * output = new char[24];
+	vector<int> vetObjeto;
+
 
 	strcpy(output, "outputs/objHipotetico.o");
 	strcpy(outPre, "outputs/outPre.pre");
@@ -906,8 +911,8 @@ int gerarObjetoHipotetico(char* input){
 
 	preprocessamento(input, outPre);
 	macro(outPre, outMacro);
-	passagemUnica(outMacro, output);
+	vetObjeto = passagemUnica(outMacro, output);
 
-	return 0;
+	return vetObjeto;
 }
 

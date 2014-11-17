@@ -1,50 +1,65 @@
 #include "../header/tradutor.hpp"
 
-int traducaoIA32(){
+int traducaoIA32(vector<int> vetObjeto){
 	// ** Traduzir objeto assembly hipotetico pra codigo IA32
-	ifstream fpInput;
 	ofstream fpOutput;
 	vector<int> opcodes;
 	vector<string> codigoIA_32, temp;
 	string buffer, opcode;
 	int i, j;
 
-	fpInput.open("./outputs/objHipotetico.o");
-	if(!fpInput.is_open()){
-		cout << "Arquivo objeto hipotetico nao encontrado." << endl;
-		return 1;
-	}
+    //comentei toda essa parte pq agente ja tinha esse vetor do trabalho passado.
+    opcodes = vetObjeto;
 
-	// Pega os opcodes do objeto e passa para um vetor de inteiros
-	getline(fpInput, buffer); 
-	for (i = 0; i < buffer.size(); ++i)
-	{
-		if(buffer[i] != ' '){
-			opcode += buffer[i];
-		}
-		else{
-			opcodes.push_back(stoi(opcode));
-			opcode.clear();
-		}
-	}
+
+//	fpInput.open("./outputs/objHipotetico.o");
+//	if(!fpInput.is_open()){
+//		cout << "Arquivo objeto hipotetico nao encontrado." << endl;
+//		return 1;
+//	}
+//
+//	// Pega os opcodes do objeto e passa para um vetor de inteiros
+//	getline(fpInput, buffer);
+//	for (i = 0; i < buffer.size(); ++i)
+//	{
+//		if(buffer[i] != ' '){
+//			opcode += buffer[i];
+//		}
+//		else{
+//			opcodes.push_back(stoi(opcode));
+//			opcode.clear();
+//		}
+//	}
 
 	// Inicio do .text
+	//acho q devemos colocar um '\n' em todas as instrucoes, certo?
 	codigoIA_32.push_back("section .text");
 	codigoIA_32.push_back("global _start");
 	codigoIA_32.push_back("_start:");
 
-	//TODO: primeiro data ou text? 
-	
+	//TODO: primeiro data ou text?
+	//tanto faz!
+
 	// Le vetor de opcodes ate encontrar stop
 	// Gera codigo ia-32 correspondente a instrucao
 	i = -1;
+	//pensando:
+	//add var1 -> add eax, [var1]
+	//
 	do{
 		i++;
+		temp.clear();
 		switch(opcodes[i]){
 			case ADD:
+                buffer = "add";
+                temp.push_back(getAddFormat(buffer,opcodes[i+1]));
+                i++;
 				//Jony aqui
 				break;
 			case SUB:
+                buffer = "sub";
+                temp.push_back(getAddFormat(buffer,opcodes[i+1]));
+                i++;
 				//Jony aqui
 				break;
 			case MULT:
@@ -54,19 +69,32 @@ int traducaoIA32(){
 				//Jony aqui
 				break;
 			case JMP:
+                buffer = "jmp";
+                temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
+                i++;
 				//Jony aqui
 				break;
 			case JMPN:
+                buffer = "jl";
+                temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
+                i++;
 				//Jony aqui
 				break;
 			case JMPP:
+                buffer = "jg";
+                temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
+                i++;
 				//Jony aqui
 				break;
 			case JMPZ:
+                buffer = "je";
+                temp.push_back(getJmpFormat(buffer,opcodes[i+1]));
+                i++;
 				//Jony aqui
 				break;
 			case COPY:
 				//Jony aqui
+				temp = getCopyFormat(opcodes[i+1],opcodes[i+2]);
 				i += 2;		// operacao que utiliza 2 operandos
 				break;
 			case LOAD:
@@ -100,7 +128,7 @@ int traducaoIA32(){
 				i++;
 				break;
 			case STOP:
-				temp = instStop(); 
+				temp = instStop();
 				break;
 		}
 		// Insere no codigo a instrucao processada
@@ -109,6 +137,18 @@ int traducaoIA32(){
 		}
 	} while(opcodes[i] != STOP && i < opcodes.size() - 1);
 
+	//como o criterio de parada eh o stop, nesse ponto geramos o IA32 do text, a partir daqui vamos fazer o data!!!
+	//eh necesario section bss?!
+	codigoIA_32.push_back("section .data");
+
+	fpOutput.open("outputs_ia32/assemblyIA32.s");
+	for(i=0;i < codigoIA_32.size();i++){
+        fpOutput << codigoIA_32[i];
+        fpOutput << '\n';
+
+	}
+
+    fpOutput.close();
 	return 0;
 }
 
@@ -157,4 +197,54 @@ vector<string> instStop(){
 	codigo.push_back("int 80h");
 
 	return codigo;
+}
+
+string getAddFormat(string inst,int op){
+    string result;
+
+    result += inst;
+    result += " eax, ";
+    result += "[var";
+    result += to_string(op);
+    result += "]";
+
+
+    return result;
+
+
+}
+
+string getJmpFormat(string inst,int op){
+    string result;
+
+    result += inst;
+    result += " label";
+    result += to_string(op);
+
+    return result;
+
+
+}
+
+vector<string> getCopyFormat(int op1,int op2){
+    string result;
+    vector<string> vetor;
+
+    result += "mov ebx, [var";
+    result += to_string(op2);
+    result += "]";
+    vetor.push_back(result);
+
+    result.clear();
+
+    result += "mov [var";
+    result += to_string(op1);
+    result += "], ";
+    result += "ebx";
+
+    vetor.push_back(result);
+
+    return vetor;
+
+
 }

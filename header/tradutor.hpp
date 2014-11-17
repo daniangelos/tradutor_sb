@@ -28,7 +28,7 @@ enum{
 	STOP
 };
 
-int traducaoIA32();
+int traducaoIA32(vector<int> vetObjeto);
 vector<string> lerInteiro();
 vector<string> escreverInteiro();
 vector<string> lerChar();
@@ -36,5 +36,9 @@ vector<string> escreverChar();
 vector<string> lerString();
 vector<string> escreverString();
 vector<string> instStop();
+string getAddFormat(string inst,int op);
+string getJmpFormat(string inst,int op);
+vector<string> getCopyFormat(int op1,int op2);
+
 
 #endif //TRADUTOR_HPP

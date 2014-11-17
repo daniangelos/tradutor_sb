@@ -17,6 +17,6 @@
 
 using namespace std;
 
-int gerarObjetoHipotetico(char * input);
+vector<int> gerarObjetoHipotetico(char * input);
 
 #endif //MONTADOR_HPP
