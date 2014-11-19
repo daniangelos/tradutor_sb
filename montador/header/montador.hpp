@@ -17,6 +17,27 @@
 
 using namespace std;
 
+
+typedef struct rotulo
+{
+	int defined;
+	int value;
+	int valorDoConst = 0;
+	list<int> use;
+	bool isLabel;
+	bool isVar;
+	bool isConst;
+	int spaceSIZE = 1;
+}rotulo;
+
+typedef struct argumento
+{
+	string arg;
+	int linha;
+}argumento;
+
+
+
 vector<int> gerarObjetoHipotetico(char * input);
 
 #endif //MONTADOR_HPP

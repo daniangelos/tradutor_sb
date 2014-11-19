@@ -7,6 +7,9 @@ int traducaoIA32(vector<int> vetObjeto){
 	vector<string> codigoIA_32, temp;
 	string buffer, opcode;
 	int i, j;
+	int enderecoAtual;
+	vector<string> paraBss;
+	vector<string> paraData;
 
     //comentei toda essa parte pq agente ja tinha esse vetor do trabalho passado.
 	//boa!! nem precisa gerar o output do montador entao...
@@ -18,7 +21,7 @@ int traducaoIA32(vector<int> vetObjeto){
 	codigoIA_32.push_back("_start:");
 
 	//TODO: primeiro data ou text?
-	//tanto faz! 
+	//tanto faz!
 	//nao!! preciso saber onde comeca o text no objeto, se nao vou estar lendo dado como instrucao... nao?
 
 	// Le vetor de opcodes ate encontrar stop
@@ -42,9 +45,13 @@ int traducaoIA32(vector<int> vetObjeto){
 				break;
 			case MULT:
 				//Jony aqui
+				temp.push_back(getMultFormat(opcodes[i+1]));
+				i++;
 				break;
 			case DIV:
 				//Jony aqui
+				temp.push_back(getDivFormat(opcodes[i+1]));
+				i++;
 				break;
 			case JMP:
                 buffer = "jmp";
@@ -72,9 +79,13 @@ int traducaoIA32(vector<int> vetObjeto){
 				break;
 			case LOAD:
 				//Jony aqui
+				temp.push_back(getLoadFormat(opcodes[i+1]));
+				i++;
 				break;
 			case STORE:
 				//Jony aqui
+				temp.push_back(getStoreFormat(opcodes[i+1]));
+				i++;
 				break;
 			case INPUT:
 				temp = lerInteiro(opcodes[i+1]);
@@ -110,6 +121,10 @@ int traducaoIA32(vector<int> vetObjeto){
 		}
 	} while(opcodes[i] != STOP && i < opcodes.size() - 1);
 
+
+    //apenas para deixar o codigo ia32 mais bonitinho no final:
+    codigoIA_32.push_back("");
+
 	temp = escreverSubrotinas();
 	for(j = 0; j < temp.size(); j++){
 		codigoIA_32.push_back(temp[j]);
@@ -117,7 +132,72 @@ int traducaoIA32(vector<int> vetObjeto){
 
 	//como o criterio de parada eh o stop, nesse ponto geramos o IA32 do text, a partir daqui vamos fazer o data!!!
 	//eh necesario section bss?!
+	enderecoAtual = i;
+
+	while(enderecoAtual < opcodes.size()){
+        //usarei a tabela de rotulos para verificar se a variavel em questao eh space e qnt espaço alocado,
+        //a tabela de rotulos eh global, usarei na bruta!!!
+        //achar a variavel em questao pelo endereco dela que agente tem no endereco atual
+        for(auto it = tabelaDeRotulos.begin();it != tabelaDeRotulos.end();it++){
+            buffer.clear();
+            //conferir se o endereco eh igual ao do endereco atual, se for eh a variavel q agente quer
+            if(it->second.value == enderecoAtual){
+                //variavel achada
+                if(it->second.isLabel){
+                    //nao sei o q fazer com isso ainda
+
+                }
+                else if(!it->second.isConst){
+                    //botar no bss ja que eh spaco nao inicializado
+                    buffer += "var";
+                    buffer += to_string(enderecoAtual);
+                    buffer += ": ";
+                    buffer += "resw ";
+                    buffer += to_string(it->second.spaceSIZE);
+
+                    paraBss.push_back(buffer);
+
+                    //passar direto dos proximos spaces alocados como zero nos opcodes, que ja foram declarados.
+                    enderecoAtual = enderecoAtual + it->second.spaceSIZE - 1;
+
+                }
+                else{
+                    //so pode ser const, botar no data, porem nada impede que o modifiquem no data, pensemos depois.
+                    buffer += "var";
+                    buffer += to_string(enderecoAtual);
+                    buffer += ": ";
+                    buffer += "dw ";
+                    buffer += to_string(it->second.valorDoConst);   //valor do const
+
+                    paraData.push_back(buffer);
+
+
+                }
+            }
+
+        }
+
+
+        enderecoAtual++;
+	}
+
+	//usar os vector de strings de bss e data para enche-los
+	//começar com o data
+	codigoIA_32.push_back("");
 	codigoIA_32.push_back("section .data");
+	for(j=0;j<paraData.size();j++){
+        codigoIA_32.push_back(paraData[j]);
+
+	}
+
+	//bss
+	codigoIA_32.push_back("");
+	codigoIA_32.push_back("section .bss");
+	for(j=0;j<paraBss.size();j++){
+        codigoIA_32.push_back(paraBss[j]);
+
+	}
+
 
 	fpOutput.open("outputs_ia32/assemblyIA32.s");
 	for(i=0;i < codigoIA_32.size();i++){
@@ -133,9 +213,9 @@ int traducaoIA32(vector<int> vetObjeto){
 vector<string> lerInteiro(int op){
 	vector<string> codigo;
 
-	codigo.push_back("mov ecx, [var" + to_string(op) + "]");
+	codigo.push_back("mov ecx, var" + to_string(op));
 	codigo.push_back("call input");
-	codigo.push_back("add ecx, 0x30");
+	codigo.push_back("sub byte [ecx], 0x30");
 
 	return codigo;
 }
@@ -143,8 +223,8 @@ vector<string> lerInteiro(int op){
 vector<string> escreverInteiro(int op){
 	vector<string> codigo;
 
-	codigo.push_back("mov ecx, [var" + to_string(op) + "]");
-	codigo.push_back("add ecx, 0x30");
+	codigo.push_back("mov ecx, var" + to_string(op));
+	codigo.push_back("add byte [ecx], 0x30");
 	codigo.push_back("call output");
 
 	return codigo;
@@ -212,6 +292,56 @@ string getJmpFormat(string inst,int op){
 
 }
 
+string getMultFormat(int op){
+    string result;
+
+    result += "mul byte [var";
+    result += to_string(op);
+    result += "]";
+
+    return result;
+
+
+}
+
+string getLoadFormat(int op){
+    string result;
+
+    result += "mov eax, ";
+    result += "[var";
+    result += to_string(op);
+    result += "]";
+
+    return result;
+
+
+}
+
+string getStoreFormat(int op){
+    string result;
+
+    result += "mov word [var";
+    result += to_string(op);
+    result += "], ";
+    result += "eax";
+
+    return result;
+
+
+}
+
+string getDivFormat(int op){
+    string result;
+
+    result += "div word [var";
+    result += to_string(op);
+    result += "]";
+
+    return result;
+
+
+}
+
 vector<string> getCopyFormat(int op1,int op2){
     string result;
     vector<string> vetor;
@@ -241,7 +371,7 @@ vector<string> escreverSubrotinas(){
 	//Input padrao
 	codigo.push_back("input:");
 	codigo.push_back("pusha");
-	codigo.push_back("mov eax, 4");
+	codigo.push_back("mov eax, 3");
 	codigo.push_back("mov ebx, 0");
 	codigo.push_back("mov edx, 1");
 	codigo.push_back("int 0x80");

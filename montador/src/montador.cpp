@@ -5,30 +5,13 @@
 using namespace std;
 using namespace pre_parser;
 
-typedef struct rotulo
-{
-	int defined;
-	int value;
-	list<int> use;
-	bool isLabel;
-	bool isVar;
-	bool isConst;
-	int spaceSIZE = 1;
-}rotulo;
-
-typedef struct argumento
-{
-	string arg;
-	int linha;
-}argumento;
-
+//variaveis globais!!!
 map<string, rotulo> tabelaDeRotulos;
 vector< vector <string> > vetorTokensInput;
 vector< vector <string> > vetorTokensTratado;
 int erro = 0;
 map<string,string> tabelaDefines;
 map<string,vector <vector <string> > > tabelaDeMacros;
-
 
 //Apagar dois pontos dos rotulos
 string apagaDoisPontos(string str){
@@ -486,6 +469,7 @@ vector<int> passagemUnica(char* input, char* output){
 								}
 								if(stringCompareI(line[1],"const")){
 									it->second.isConst = 1;
+									it->second.valorDoConst = stoi(line[2]);    //botando o valor do const na struct
 								}else{
 									it->second.isConst = 0;
 									if(line.size() > 2 && stringCompareI(line[1], "space")){
@@ -518,6 +502,7 @@ vector<int> passagemUnica(char* input, char* output){
 						}
 						if(stringCompareI(line[1],"const")){
 							symbol.isConst = 1;
+							symbol.valorDoConst = stoi(line[2]);    //botando o valor do const na struct
 						}else{
 							symbol.isConst = 0;
 							if(line.size() > 2 && stringCompareI(line[1], "space")){
