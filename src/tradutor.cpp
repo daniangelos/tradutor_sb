@@ -1,5 +1,7 @@
 #include "../header/tradutor.hpp"
 
+vector<string> defines;
+
 int traducaoIA32(vector<int> vetObjeto){
 	// ** Traduzir objeto assembly hipotetico pra codigo IA32
 	ofstream fpOutput;
@@ -146,8 +148,10 @@ int traducaoIA32(vector<int> vetObjeto){
                     buffer += "var";
                     buffer += to_string(enderecoAtual);
                     buffer += ": ";
-                    buffer += "resw ";
+                    buffer += "resb ";
                     buffer += to_string(it->second.spaceSIZE);
+                    defines.push_back("\n%define VAR" + to_string(enderecoAtual) +
+                    	 "_SIZE " + to_string(it->second.spaceSIZE));
 
                     paraBss.push_back(buffer);
 
@@ -194,6 +198,11 @@ int traducaoIA32(vector<int> vetObjeto){
 
 
 	fpOutput.open("outputs_ia32/assemblyIA32.s");
+	for(i=0;i < defines.size();i++){
+        fpOutput << defines[i];
+        fpOutput << '\n';
+
+	}
 	for(i=0;i < codigoIA_32.size();i++){
         fpOutput << codigoIA_32[i];
         fpOutput << '\n';
@@ -248,7 +257,7 @@ vector<string> lerString(int op){
 	codigo.push_back("sub ah, ah");
 	codigo.push_back("add ah, 0x0a");
 	codigo.push_back("mov ebx, var" + to_string(op));
-	codigo.push_back("mov edx, STRING_SIZE");
+	codigo.push_back("mov edx, VAR" + to_string(op) + "_SIZE");
 	codigo.push_back("add edx, ebx");
 	codigo.push_back("inString:");
 	codigo.push_back("mov ecx, ebx");
@@ -270,9 +279,9 @@ vector<string> escreverString(int op){
 	codigo.push_back("sub ah, ah");
 	codigo.push_back("add ah, 0x0a");
 	codigo.push_back("mov ebx, var" + to_string(op));
-	codigo.push_back("mov edx, STRING_SIZE");
+	codigo.push_back("mov edx, VAR" + to_string(op) + "_SIZE");
 	codigo.push_back("add edx, ebx");
-	codigo.push_back("outString");
+	codigo.push_back("outString:");
 	codigo.push_back("mov ecx, ebx");
 	codigo.push_back("mov BYTE al, [ebx]");
 	codigo.push_back("cmp al, ah");

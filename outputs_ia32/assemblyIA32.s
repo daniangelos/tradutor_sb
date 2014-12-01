@@ -1,15 +1,44 @@
+
+%define VAR11_SIZE 10
+
+%define VAR21_SIZE 1
 section .text
 global _start
 _start:
-add eax, [var11]
-mov ebx, [var12]
-mov [var10], ebx
-mov ecx, var12
+mov ecx, var21
 call input
-sub byte [ecx], 0x30
-mov ecx, var12
-add byte [ecx], 0x30
+mov ecx, var21
 call output
+sub ah, ah
+add ah, 0x0a
+mov ebx, var11
+mov edx, VAR11_SIZE
+add edx, ebx
+inString:
+mov ecx, ebx
+call input
+mov BYTE al, [ebx]
+cmp al, ah
+je endInString
+inc ebx
+cmp ebx, edx
+jb inString
+endInString:
+sub ah, ah
+add ah, 0x0a
+mov ebx, var11
+mov edx, VAR11_SIZE
+add edx, ebx
+outString:
+mov ecx, ebx
+mov BYTE al, [ebx]
+cmp al, ah
+je endOutString
+call output
+inc ebx
+cmp ebx, edx
+jb outString
+endOutString:
 mov eax, 1
 mov ebx, 0
 int 80h
@@ -32,8 +61,9 @@ popa
 ret
 
 section .data
-var10: dw 1
-var11: dw 3
+var9: dw 1
+var10: dw 3
 
 section .bss
-var12: resw 1
+var11: resb 10
+var21: resb 1
