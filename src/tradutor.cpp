@@ -11,8 +11,6 @@ int traducaoIA32(vector<int> vetObjeto){
 	vector<string> paraBss;
 	vector<string> paraData;
 
-    //comentei toda essa parte pq agente ja tinha esse vetor do trabalho passado.
-	//boa!! nem precisa gerar o output do montador entao...
     opcodes = vetObjeto;
 
 	// Inicio do .text
@@ -44,12 +42,10 @@ int traducaoIA32(vector<int> vetObjeto){
                 i++;
 				break;
 			case MULT:
-				//Jony aqui
 				temp.push_back(getMultFormat(opcodes[i+1]));
 				i++;
 				break;
 			case DIV:
-				//Jony aqui
 				temp.push_back(getDivFormat(opcodes[i+1]));
 				i++;
 				break;
@@ -78,12 +74,10 @@ int traducaoIA32(vector<int> vetObjeto){
 				i += 2;		// operacao que utiliza 2 operandos
 				break;
 			case LOAD:
-				//Jony aqui
 				temp.push_back(getLoadFormat(opcodes[i+1]));
 				i++;
 				break;
 			case STORE:
-				//Jony aqui
 				temp.push_back(getStoreFormat(opcodes[i+1]));
 				i++;
 				break;
@@ -96,19 +90,19 @@ int traducaoIA32(vector<int> vetObjeto){
 				i++;
 				break;
 			case C_INPUT:
-				temp = lerChar();
+				temp = lerChar(opcodes[i+1]);
 				i++;
 				break;
 			case C_OUTPUT:
-				temp = escreverChar();
+				temp = escreverChar(opcodes[i+1]);
 				i++;
 				break;
 			case S_INPUT:
-				temp = lerString();
+				temp = lerString(opcodes[i+1]);
 				i++;
 				break;
 			case S_OUTPUT:
-				temp = escreverString();
+				temp = escreverString(opcodes[i+1]);
 				i++;
 				break;
 			case STOP:
@@ -230,26 +224,65 @@ vector<string> escreverInteiro(int op){
 	return codigo;
 }
 
-vector<string> lerChar(){
+vector<string> lerChar(int op){
 	vector<string> codigo;
+
+	codigo.push_back("mov ecx, var" + to_string(op));
+	codigo.push_back("call input");
 
 	return codigo;
 }
 
-vector<string> escreverChar(){
+vector<string> escreverChar(int op){
 	vector<string> codigo;
+
+	codigo.push_back("mov ecx, var" + to_string(op));
+	codigo.push_back("call output");
 
 	return codigo;
 }
 
-vector<string> lerString(){
+vector<string> lerString(int op){
 	vector<string> codigo;
+
+	codigo.push_back("sub ah, ah");
+	codigo.push_back("add ah, 0x0a");
+	codigo.push_back("mov ebx, var" + to_string(op));
+	codigo.push_back("mov edx, STRING_SIZE");
+	codigo.push_back("add edx, ebx");
+	codigo.push_back("inString:");
+	codigo.push_back("mov ecx, ebx");
+	codigo.push_back("call input");
+	codigo.push_back("mov BYTE al, [ebx]");
+	codigo.push_back("cmp al, ah");
+	codigo.push_back("je endInString");
+	codigo.push_back("inc ebx");
+	codigo.push_back("cmp ebx, edx");
+	codigo.push_back("jb inString");
+	codigo.push_back("endInString:");
 
 	return codigo;
 }
 
-vector<string> escreverString(){
+vector<string> escreverString(int op){
 	vector<string> codigo;
+
+	codigo.push_back("sub ah, ah");
+	codigo.push_back("add ah, 0x0a");
+	codigo.push_back("mov ebx, var" + to_string(op));
+	codigo.push_back("mov edx, STRING_SIZE");
+	codigo.push_back("add edx, ebx");
+	codigo.push_back("outString");
+	codigo.push_back("mov ecx, ebx");
+	codigo.push_back("mov BYTE al, [ebx]");
+	codigo.push_back("cmp al, ah");
+	codigo.push_back("je endOutString");
+	codigo.push_back("call output");
+	codigo.push_back("inc ebx");
+	codigo.push_back("cmp ebx, edx");
+	codigo.push_back("jb outString");
+	codigo.push_back("endOutString:");
+
 
 	return codigo;
 }

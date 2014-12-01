@@ -36,10 +36,10 @@ enum{
 int traducaoIA32(vector<int> vetObjeto);
 vector<string> lerInteiro(int op);
 vector<string> escreverInteiro(int op);
-vector<string> lerChar();
-vector<string> escreverChar();
-vector<string> lerString();
-vector<string> escreverString();
+vector<string> lerChar(int op);
+vector<string> escreverChar(int op);
+vector<string> lerString(int op);
+vector<string> escreverString(int op);
 vector<string> instStop();
 string getAddFormat(string inst,int op);
 string getJmpFormat(string inst,int op);
