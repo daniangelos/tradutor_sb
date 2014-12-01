@@ -150,7 +150,7 @@ int traducaoIA32(vector<int> vetObjeto){
                     buffer += ": ";
                     buffer += "resb ";
                     buffer += to_string(it->second.spaceSIZE);
-                    defines.push_back("\n%define VAR" + to_string(enderecoAtual) +
+                    defines.push_back("%define VAR" + to_string(enderecoAtual) +
                     	 "_SIZE " + to_string(it->second.spaceSIZE));
 
                     paraBss.push_back(buffer);
@@ -203,6 +203,7 @@ int traducaoIA32(vector<int> vetObjeto){
         fpOutput << '\n';
 
 	}
+	fpOutput << '\n';
 	for(i=0;i < codigoIA_32.size();i++){
         fpOutput << codigoIA_32[i];
         fpOutput << '\n';
